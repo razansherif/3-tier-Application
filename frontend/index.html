@@ -1,39 +1,323 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Todo App</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-gradient-1: #c7d2fe;
+            --bg-gradient-2: #fbcfe8;
+            --surface: rgba(255, 255, 255, 0.95);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            background: var(--surface);
+            width: 100%;
+            max-width: 450px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        header {
+            padding: 30px 30px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            color: var(--text-main);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+
+        .status-dot.online { background: #10b981; box-shadow: 0 0 8px #10b981; }
+        .status-dot.offline { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+        .content {
+            padding: 30px;
+        }
+
+        /* Form Styles */
+        form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #f8fafc;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            background: #fff;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* List Styles */
+        ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Custom Scrollbar */
+        ul::-webkit-scrollbar { width: 6px; }
+        ul::-webkit-scrollbar-track { background: transparent; }
+        ul::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            gap: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .todo-text {
+            color: var(--text-main);
+            font-size: 1rem;
+            flex: 1;
+        }
+
+        .completed .todo-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .completed .checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .completed .checkbox::after {
+            content: "✓";
+            color: white;
+            font-size: 14px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px 0;
+            font-size: 0.95rem;
+            border: none;
+            background: transparent;
+        }
+        
+        .empty-state:hover {
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
 <body>
-  <h2>My DevOps Todo List</h2>
-  <input type="text" id="todoInput" placeholder="New Task">
-  <button onclick="addTodo()">Add</button>
-  <ul id="todoList"></ul>
 
-  <script>
-    const API_URL = "http://192.168.49.2:31000/todos";  // so html can access the backend
-    async function fetchTodos() {
-      try {
-        const res = await fetch(API_URL);
-        const todos = await res.json();
-        const list = document.getElementById('todoList');
-        list.innerHTML = '';
-        todos.forEach(t => {
-          const li = document.createElement('li');
-          li.textContent = t.title;
-          list.appendChild(li);
+    <div class="app-container">
+        <header>
+            <h1>My Tasks</h1>
+            <div class="status">
+                <div id="status-dot" class="status-dot"></div>
+                <span id="status-text">Checking API status...</span>
+            </div>
+        </header>
+
+        <div class="content">
+            <form id="todo-form">
+                <input type="text" id="todo-input" placeholder="What needs to be done?" required autocomplete="off">
+                <button type="submit">Add</button>
+            </form>
+
+            <ul id="todo-list">
+                <!-- Todos will be injected here via JavaScript -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Updated API Base URL based on your provided address
+        const API_URL = 'http://192.168.49.2:31000';
+
+        const form = document.getElementById('todo-form');
+        const input = document.getElementById('todo-input');
+        const todoList = document.getElementById('todo-list');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+
+        // 1. Check if the API is online
+        async function checkApiStatus() {
+            try {
+                // Calls http://192.168.49.2:31000/
+                const response = await fetch(`${API_URL}/`);
+                if (response.ok) {
+                    statusDot.className = 'status-dot online';
+                    statusText.textContent = 'API Connected';
+                } else {
+                    throw new Error('API down');
+                }
+            } catch (error) {
+                statusDot.className = 'status-dot offline';
+                statusText.textContent = 'API Offline - Check Server';
+            }
+        }
+
+        // 2. Fetch all Todos from the API
+        async function fetchTodos() {
+            try {
+                // Calls http://192.168.49.2:31000/todos
+                const response = await fetch(`${API_URL}/todos`);
+                if (!response.ok) throw new Error('Failed to fetch');
+                
+                const todos = await response.json();
+                renderTodos(todos);
+            } catch (error) {
+                console.error('Error fetching todos:', error);
+                todoList.innerHTML = '<li class="empty-state">Could not load tasks. Is the server running?</li>';
+            }
+        }
+
+        // 3. Render Todos to the screen
+        function renderTodos(todos) {
+            todoList.innerHTML = ''; // Clear current list
+
+            if (todos.length === 0) {
+                todoList.innerHTML = '<li class="empty-state">All caught up! Add a new task above.</li>';
+                return;
+            }
+
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                if (todo.completed) li.classList.add('completed');
+
+                li.innerHTML = `
+                    <div class="checkbox"></div>
+                    <span class="todo-text">${todo.title}</span>
+                `;
+                todoList.appendChild(li);
+            });
+        }
+
+        // 4. Add a new Todo
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent page reload
+            const title = input.value.trim();
+            if (!title) return;
+
+            try {
+                // Calls http://192.168.49.2:31000/todos
+                const response = await fetch(`${API_URL}/todos`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title: title })
+                });
+
+                if (response.ok) {
+                    input.value = ''; // Clear input field
+                    fetchTodos();     // Refresh the list to show the new item
+                }
+            } catch (error) {
+                console.error('Error adding todo:', error);
+                alert('Failed to add task. Make sure the API is running.');
+            }
         });
-      } catch (err) { console.error(err); }
-    }
 
-    async function addTodo() {
-      const title = document.getElementById('todoInput').value;
-      if (!title) return;
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title })
-      });
-      document.getElementById('todoInput').value = '';
-      fetchTodos();
-    }
-    fetchTodos();
-  </script>
+        // Initialize App
+        checkApiStatus();
+        fetchTodos();
+    </script>
 </body>
 </html>

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: razansherif/todo-api:2.0
+          image: razansherif/todo-api:3.0
           ports:
             - containerPort: 5000
           env:
