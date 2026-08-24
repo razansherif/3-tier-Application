@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 2
+  selector:   # matches any pod with this label to this
+    matchLabels:
+      app: backend
+  template:  # gives the pod its label
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: razansherif/todo-api:1.0
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DB_HOST
+              value: db-service             # Pointing to the database Service name
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: "admin"
+            - name: DB_PASSWORD
+              value: "secretpassword"
+            - name: DB_NAME
+              value: "tododb" 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: NodePort
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 5000   #port in cluster
+      targetPort: 5000  #port inside container
+      nodePort: 31000   #this is because HTML in frontend runs outside the cluster so it will need external access to backend
