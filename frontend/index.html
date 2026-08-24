@@ -7,9 +7,7 @@
   <ul id="todoList"></ul>
 
   <script>
-    // WE WILL UPDATE THIS PLACEHOLDER IN STEP 6
-    const API_URL = 'http://MINIKUBE_IP:NODEPORT/todos';
-
+    const API_URL = "http://192.168.49.2:31000/todos";  // so html can access the backend
     async function fetchTodos() {
       try {
         const res = await fetch(API_URL);
