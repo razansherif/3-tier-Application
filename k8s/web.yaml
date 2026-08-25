@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: razansherif/todo-web:5.0
+          image: razansherif/todo-web:6.0
           ports:
             - containerPort: 80
 
