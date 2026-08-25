@@ -228,7 +228,7 @@
 
     <script>
         // Updated API Base URL based on your provided address
-        const API_URL = 'http://192.168.49.2:31000';
+        const API_URL = 'http://10.102.229.60:31000';
 
         const form = document.getElementById('todo-form');
         const input = document.getElementById('todo-input');
@@ -239,7 +239,7 @@
         // 1. Check if the API is online
         async function checkApiStatus() {
             try {
-                // Calls http://192.168.49.2:31000/
+                // Calls http://10.102.229.60:31000/
                 const response = await fetch(`${API_URL}/`);
                 if (response.ok) {
                     statusDot.className = 'status-dot online';
@@ -256,7 +256,7 @@
         // 2. Fetch all Todos from the API
         async function fetchTodos() {
             try {
-                // Calls http://192.168.49.2:31000/todos
+                // Calls http://10.102.229.60:31000/todos
                 const response = await fetch(`${API_URL}/todos`);
                 if (!response.ok) throw new Error('Failed to fetch');
                 
@@ -296,7 +296,7 @@
             if (!title) return;
 
             try {
-                // Calls http://192.168.49.2:31000/todos
+                // Calls http://10.102.229.60:31000/todos
                 const response = await fetch(`${API_URL}/todos`, {
                     method: 'POST',
                     headers: {
