@@ -30,7 +30,7 @@ jobs:
 
     # Build and push frontend
       - name: Build Frontend Image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/todo-web:4.0 ./frontend
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/todo-web:5.0 ./frontend
 
       - name: Push Frontend Image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/todo-web:4.0
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/todo-web:5.0
